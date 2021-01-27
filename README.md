@@ -4,6 +4,9 @@ This is a reposit for data and codes used in this project:
 
 Transcriptomic profiling of tumor microenvironment reveals distinct immune subgroups of metastatic melanoma: implications for immunotherapy
 
+All the processed data and figures are public-accessible!
+
+For the source codes used in this work,
 Plsease kindly send your request to the yoshippmm@163.com, then the lab manager of Zhang lab will review and approve your resquest. You will receive the password for unzip the files asap after approval.
 
 
