@@ -1,0 +1,43 @@
+
+library("survival")
+
+covariates <- c("Diagnosis.Age", "Sex",  "Mutation.Count.x","Fraction.Genome.Altered.y", "Neoplasm.Disease.Stage.American.Joint.Committee.on.Cancer.Code.Slim", "clu_complete_slim")
+
+univ_formulas <- sapply(covariates,
+                        function(x) as.formula(paste('Surv(Overall.Survival..Months..5years, OS.Status.Number.5years)~', x)))
+                        
+univ_models <- lapply( univ_formulas, function(x){coxph(x, data = input, na.action=na.exclude)})
+
+
+# Extract data 
+univ_results <- lapply(univ_models,
+                       function(x){ 
+                          x <- summary(x)
+                          p.value<-signif(x$wald["pvalue"], digits=5)
+                          wald.test<-signif(x$wald["test"], digits=5)
+                          beta<-signif(x$coef[1], digits=5);#coeficient beta
+                          HR <-signif(x$coef[2], digits=5);#exp(beta)
+                          HR.confint.lower <- signif(x$conf.int[,"lower .95"], 5)
+                          HR.confint.upper <- signif(x$conf.int[,"upper .95"],5)
+                          HR <- paste0(HR, " (", 
+                                       HR.confint.lower, "-", HR.confint.upper, ")")
+                          res<-c(beta, HR, wald.test, p.value)
+                          names(res)<-c("beta", "HR (95% CI for HR)", "wald.test", 
+                                        "p.value")
+                          return(res)
+                          #return(exp(cbind(coef(x),confint(x))))
+                         })
+
+
+res <- as.data.frame(t(as.data.frame(univ_results, check.names = FALSE)))
+res <- res[order(res$p.value),]
+res <- res[,c(2,4)]
+res
+
+
+
+res.cox <- coxph(Surv(Overall.Survival..Months..5years, OS.Status.Number.5years) ~ Diagnosis.Age + Fraction.Genome.Altered.y+Neoplasm.Disease.Stage.American.Joint.Committee.on.Cancer.Code.Slim+clu_complete_slim, data =  input)
+summary(res.cox)
+
+
+
